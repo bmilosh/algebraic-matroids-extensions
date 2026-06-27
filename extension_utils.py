@@ -134,15 +134,6 @@ class Utils:
         # sum([list(combinations(groundset, i)) for i in range(len(groundset)+1)], [])
         subsets = sum([list(it.combinations(seq1, num)) for num in range(1, len(seq1) + 1)], [])
         for sub in subsets:
-            # Check if it's a flat
-            # print(sub, matroid.rank(sub))
-            # # print(matroid.flats(matroid.rank(sub)))
-            # print(sub in [ f for f in matroid.flats(matroid.rank(sub))])
-            # print(sub in matroid.flats(matroid.rank(sub)))
-            # print(frozenset(sub) in matroid.flats(matroid.rank(sub)))
-            # input("Waiting")
-            # if frozenset(sub) in matroid.flats(matroid.rank(sub)):
-            #     # add the constraint
             i1_sub = sequence_to_int(sub)
             self.model.addConstr(
                 conditional_entropy(self.constraint_vector, i1_sub, aux, self.variables) == 
@@ -157,9 +148,6 @@ class Utils:
         `Resol2m` in the former setup
         """
         self.model.setParam("OutputFlag", output_flag)
-        # path = 'C:\\Users\\mikky\\OneDrive\\Escritorio\\For Oriol\\v8_AK2.lp'
-        # if sys.platform == 'linux':
-        #     path = os.popen(f'wslpath "{path}"').read().strip()
 
         # self.model.write(path)
         if should_write:
@@ -168,115 +156,3 @@ class Utils:
         result = self.model.optimize()
 
         return result
-
-
-
-# class Utils:
-#     def __init__(self, participants: int, variables: int) -> None:
-#         self.participants = participants
-#         self.variables = variables
-#         self.model = None
-#         self.constraint_vector = None
-#         # self.init_constr_added = False
-#         # self.submod_constraints_list = []
-#         # self.mat_constr_added = False
-#         # self.mat_constr_list = []
-
-#     # @staticmethod
-#     def add_initialization_constraint(self):
-#         """
-#         `InitMatNew` in the former setup.
-#         Basically just adds the Shannon constraints
-#         """
-#         # Set the objective
-#         self.model.setObjective(0, GRB.MINIMIZE)
-#         # Add Shannon inequality constraints
-#         for i in range(self.variables):
-#             # entropy is nonnegative
-#             self.model.addConstr(self.constraint_vector[2**i] >= 0) 
-#             # entropy of groundset > groundset less an element
-#             self.model.addConstr(self.constraint_vector[2**self.variables - 1] >= self.constraint_vector[(2**self.variables - 1) - (2**i)])
-        
-#         #############################
-#         ## Submodularity condition ##
-#         #############################
-#         # if self.init_constr_added:
-#         #     for l in self.submod_constraints_list:
-#         #         self.model.addConstr(
-#         #             self.constraint_vector[l[0]] + self.constraint_vector[l[1]] >= 
-#         #             self.constraint_vector[l[2]] + self.constraint_vector[l[3]]
-#         #         )
-#         #         # self.submod_constraints_list.append([i + 2**j, i + 2**k, i, i + 2**j + 2**k])
-
-#         # else:
-#         #     for i in range(2**self.variables):
-#         #         v = int_to_binary_vector(i, self.variables)
-#         #         for j in range(self.variables):
-#         #             if v[j] == 0:
-#         #                 for k in range(j + 1, self.variables):
-#         #                     if v[k] == 0:
-#         #                         self.model.addConstr(
-#         #                             self.constraint_vector[i + 2**j] + self.constraint_vector[i + 2**k] >= 
-#         #                             self.constraint_vector[i] + self.constraint_vector[i + 2**j + 2**k]
-#         #                         )
-#         #                         self.submod_constraints_list.append([i + 2**j, i + 2**k, i, i + 2**j + 2**k])
-#         #     self.init_constr_added = True
-#         for i in range(2**self.variables):
-#             v = int_to_binary_vector(i, self.variables)
-#             for j in range(self.variables):
-#                 if v[j] == 0:
-#                     for k in range(j + 1, self.variables):
-#                         if v[k] == 0:
-#                             self.model.addConstr(
-#                                 self.constraint_vector[i + 2**j] + self.constraint_vector[i + 2**k] >= 
-#                                 self.constraint_vector[i] + self.constraint_vector[i + 2**j + 2**k]
-#                             )
-#                             # self.submod_constraints_list.append([i + 2**j, i + 2**k, i, i + 2**j + 2**k])
-
-
-#     # @staticmethod
-#     def add_matroid_compatibility_constraints(self, matroid, groundset):
-#         """
-#         `MatroidCompatible` in the former setup
-#         Need to import sage for this to work
-#         """
-#         # if self.mat_constr_added:
-#         #     for l in self.mat_constr_list:
-#         #         self.model.addConstr(self.constraint_vector[l[0]] == l[1])
-#         # else:
-#         #     for i in range(len(groundset) + 1):
-#         #         for s in it.combinations(groundset, i):
-#         #             j = sequence_to_int(s)
-#         #             r = matroid.rank(s)
-#         #             self.model.addConstr(self.constraint_vector[j] == r)
-#         #             self.mat_constr_list.append([j, r])
-#         #     self.mat_constr_added = True
-#         for i in range(len(groundset) + 1):
-#             for s in it.combinations(groundset, i):
-#                 j = sequence_to_int(s)
-#                 self.model.addConstr(self.constraint_vector[j] == matroid.rank(s))
-
-    
-#     def CI(self, seq1: typing.Sequence, seq2: typing.Sequence, aux: int):
-#         i1 = sequence_to_int(seq1)
-#         i2 = sequence_to_int(seq2)
-#         self.model.addConstr(conditional_entropy(self.constraint_vector, aux, i1, self.variables) == 0)
-#         self.model.addConstr(conditional_entropy(self.constraint_vector, aux, i2, self.variables) == 0)
-#         self.model.addConstr(mutual_information(self.constraint_vector, i1, i2, self.variables) == self.constraint_vector[aux])
-
-
-#     # @staticmethod
-#     def solve_model(self):
-#         """
-#         `Resol2m` in the former setup
-#         """
-#         self.model.setParam("OutputFlag", 0)
-#         # path = 'C:\\Users\\mikky\\OneDrive\\Escritorio\\For Oriol\\v8_1.lp'
-#         # if sys.platform == 'linux':
-#         #     path = os.popen(f'wslpath "{path}"').read().strip()
-
-#         # self.model.write(path)
-
-#         result = self.model.optimize()
-
-#         return result
